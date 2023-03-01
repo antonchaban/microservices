@@ -1,13 +1,16 @@
 from flask_restful import Resource, marshal_with
 from flask import abort, request
+from flask_apispec import marshal_with, use_kwargs
+from flask_apispec.views import MethodResource
 
-from app import api, db
+
+from app import api, db, docs
 from app.models import Users
-from app.rest.constants import user_resource, user_args
+from app.rest.constants import UserResponseSchema, PostUserRequestSchema, PutUserRequestSchema
 
 
-class GetUser(Resource):
-    @marshal_with(user_resource)
+class GetUser(MethodResource, Resource):
+    @marshal_with(UserResponseSchema)
     def get(self, id):
         user = Users.query.get(id)
 
@@ -16,29 +19,24 @@ class GetUser(Resource):
 
         return user
 
-    @marshal_with(user_resource)
-    def put(self, id):
+    @use_kwargs(PutUserRequestSchema, location='query')
+    @marshal_with(UserResponseSchema)
+    def put(self, id, **kwargs):
         user = Users.query.get(id)
 
-        args = user_args.parse_args()
-
-        code = args.get('username', None)
+        username = kwargs.get('username', None)
         if username:
             user.username = username
 
-        password = args.get('password', None)
+        password = kwargs.get('password', None)
         if password:
             user.password = password
-
-        created_stamp = args.get('created_stamp', None)
-        if created_stamp:
-            user.created_stamp = created_stamp
 
         db.session.commit()
 
         return user
 
-    @marshal_with(user_resource)
+    @marshal_with(UserResponseSchema)
     def delete(self, id):
         user = Users.query.get(id)
 
@@ -51,17 +49,18 @@ class GetUser(Resource):
         return user
 
 
-class GetUsers(Resource):
-    @marshal_with(user_resource)
+class GetUsers(MethodResource, Resource):
+    @marshal_with(UserResponseSchema(many=True))
     def get(self):
         users = Users.query.all()
         return users
 
-    @marshal_with(user_resource)
-    def post(self):
+    @use_kwargs(PostUserRequestSchema, location='query')
+    @marshal_with(UserResponseSchema)
+    def post(self, **kwargs):
         user = Users()
 
-        for atr, value in user_args.parse_args().items():
+        for atr, value in kwargs.items():
             setattr(user, atr, value)
 
         db.session.add(user)
@@ -72,3 +71,6 @@ class GetUsers(Resource):
 
 api.add_resource(GetUsers, '/json_users')
 api.add_resource(GetUser, '/json_users/<int:id>')
+
+docs.register(GetUsers)
+docs.register(GetUser)
