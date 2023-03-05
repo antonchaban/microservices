@@ -11,7 +11,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {useCookies} from "react-cookie";
 import {useNavigate} from "react-router-dom";
-import Routes from "../Routes";
+import Routes from "../routes";
+import axios from "../api";
 
 export default function Login() {
 
@@ -21,6 +22,7 @@ export default function Login() {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         setCookie('session', 'hello');
         setSession("1");
         // const data = new FormData(event.currentTarget);

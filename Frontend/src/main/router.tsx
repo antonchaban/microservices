@@ -6,7 +6,7 @@ import Shortener from "./routes/Shortener";
 import SignUp from "./routes/SignUp";
 import React from "react";
 import Account from "./routes/Account";
-import Routes from "./Routes";
+import Routes from "./routes";
 
 const router = createBrowserRouter([
     {

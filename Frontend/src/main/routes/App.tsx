@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useCookies} from "react-cookie";
 import {useNavigate} from "react-router-dom";
-import Routes from "../Routes";
+import Routes from "../routes";
 
 export default function App() {
 

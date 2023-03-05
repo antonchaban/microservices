@@ -1,5 +1,5 @@
 import {Button, Container, Divider, Grid, Link, Paper, Typography} from "@mui/material";
-import Routes from "../Routes";
+import Routes from "../routes";
 
 export default function Account() {
 
