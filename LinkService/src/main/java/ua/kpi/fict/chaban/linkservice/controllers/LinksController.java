@@ -21,9 +21,8 @@ public class LinksController {
     }
 
     @GetMapping("links") // Tested
-    public ResponseEntity getUserLinks(@RequestBody JSONObject userId) {
-        Long id = Long.parseLong(userId.getAsString("userId"));
-        return ResponseEntity.ok(linksService.getUserLinks(id));
+    public ResponseEntity getUserLinks(@RequestParam("userId") long userId) {
+        return ResponseEntity.ok(linksService.getUserLinks(userId));
     }
 
 
