@@ -15,7 +15,7 @@ api = Api(app)
 
 app.config.update({
     'APISPEC_SPEC': APISpec(
-        title='Awesome Project',
+        title='User Info',
         version='v1',
         plugins=[MarshmallowPlugin()],
         openapi_version='2.0.0'
