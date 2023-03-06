@@ -33,6 +33,8 @@ public class AuthFilter extends UsernamePasswordAuthenticationFilter {
         String password = request.getParameter("password");
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return authManager.authenticate(token);
     }
 
