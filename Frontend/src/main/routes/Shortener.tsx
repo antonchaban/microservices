@@ -3,7 +3,7 @@ import * as React from "react";
 import {useState} from "react";
 import {Avatar, Button, Container, Link, Typography} from "@mui/material";
 import {DirectionsRun} from "@mui/icons-material";
-import Routes from "../Routes";
+import Routes from "../routes";
 
 export default function Shortener() {
 

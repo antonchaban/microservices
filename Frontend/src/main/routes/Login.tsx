@@ -12,31 +12,60 @@ import Container from '@mui/material/Container';
 import {useCookies} from "react-cookie";
 import {useNavigate} from "react-router-dom";
 import Routes from "../routes";
-import axios from "../api";
+import axios from "../api/client";
+import LoginDTO from "../dto/LoginDTO";
+import Cookies from "../cookies";
+import Endpoints from "../api/endpoints";
 
 export default function Login() {
 
     const [cookies, setCookie, removeCookie] = useCookies();
-    const [session, setSession] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        setCookie('session', 'hello');
-        setSession("1");
-        // const data = new FormData(event.currentTarget);
-        // console.log({
-        //     email: data.get('email'),
-        //     password: data.get('password'),
-        // });
+        const data = new FormData(event.currentTarget);
+
+        let username = data.get("username");
+        let password = data.get("password");
+
+        if (typeof username !== "string" || typeof password !== "string") {
+            console.error("Username or password is not string");
+            return;
+        }
+
+        axios.post<LoginDTO>(
+            Endpoints.PATH_LOGIN, null,
+            {
+                params: {
+                    "username": username,
+                    "password": password
+                }
+            })
+            .then(res => {
+                if (res.status !== 200) {
+                    return;
+                }
+                let login = res.data;
+
+                setCookie(Cookies.USER_ID, login.id, {maxAge: 604800});
+                setCookie(Cookies.ACCESS_TOKEN, login.accessToken, {maxAge: 604800});
+                setCookie(Cookies.REFRESH_TOKEN, login.refreshToken, {maxAge: 604800});
+
+                setLoggedIn(true);
+            })
+            .catch(error => {
+                console.error("Error processing login request", error);
+            })
     };
 
     useEffect(() => {
-        if (session && session.length > 0) {
-            return navigate(Routes.APP);
+        if (loggedIn) {
+            return navigate(Routes.SHORTENER);
         }
-    }, [session])
+    }, [loggedIn])
 
     return (
         <Container component="main" maxWidth="xs">

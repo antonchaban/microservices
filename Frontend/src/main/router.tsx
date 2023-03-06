@@ -7,6 +7,7 @@ import SignUp from "./routes/SignUp";
 import React from "react";
 import Account from "./routes/Account";
 import Routes from "./routes";
+import ApplicationError from "./routes/ApplicationError";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
     {
         path: Routes.ACCOUNT,
         element: <Account />
+    },
+    {
+        path: Routes.APPLICATION_ERROR,
+        element: <ApplicationError />
     }
 ])
 

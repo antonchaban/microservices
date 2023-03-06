@@ -3,7 +3,8 @@ enum Routes {
     LOGIN = "/login",
     SIGN_UP = "/signup",
     SHORTENER = "/shortener",
-    ACCOUNT = "/account"
+    ACCOUNT = "/account",
+    APPLICATION_ERROR = "/app-error"
 }
 
 export default Routes;
