@@ -4,11 +4,14 @@ from flask_restful import Api, Resource
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
+from flask_cors import CORS
 
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+CORS(app)
 
 db = SQLAlchemy(app)
 api = Api(app)
