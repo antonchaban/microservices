@@ -1,0 +1,8 @@
+services:
+  spring-boot-app:
+    image: sts:0.0.1-SNAPSHOT
+    network_mode: bridge
+    container_name: shortener
+    restart: unless-stopped
+    ports:
+      - 8080:8080

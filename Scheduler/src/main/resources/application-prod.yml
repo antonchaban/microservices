@@ -1,0 +1,32 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+    include-exception: false
+    include-message: never
+
+logging:
+  file:
+    name: scheduler.log
+  charset:
+    file: UTF-8
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://ec2-176-34-211-0.eu-west-1.compute.amazonaws.com:5432/d8ahak39q8951c
+    username: smjydhpffefdgi
+    password: 2ea7743e1fd242f0d1c8fd49b5b21d459f606e67de4316878fc80f62355ee047
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+shortener:
+  scheduler:
+    job:
+      expired:
+        link:
+          cron: 1 * * * * *
+  links:
+    renewal:
+      days: 30
