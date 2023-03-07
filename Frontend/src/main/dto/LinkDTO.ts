@@ -1,8 +1,8 @@
 type LinkDTO = {
     id?: number,
-    code: string,
+    code?: string,
     url: string,
-    userId?: number,
+    userId: number,
     expiresStamp?: string,
 }
 

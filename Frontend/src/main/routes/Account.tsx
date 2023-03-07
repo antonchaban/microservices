@@ -8,34 +8,18 @@ import LinkDTO from "../dto/LinkDTO"
 import axios from "../api/client"
 import {useEffect, useState} from "react";
 import Endpoints from "../api/endpoints";
+import UserDTO from "../dto/UserDTO";
 
 export default function Account() {
 
     const [cookies, setCookie, removeCookie] = useCookies();
     const [links, setLinks] = useState<LinkDTO[]>();
+    const [username, setUsername] = useState("");
     const navigate = useNavigate();
 
     const userId = cookies[Cookies.USER_ID];
     const accessToken = cookies[Cookies.ACCESS_TOKEN];
     const refreshToken = cookies[Cookies.REFRESH_TOKEN];
-
-    axios.get<LinkDTO[]>(
-        Endpoints.PATH_LINKS,
-        {
-            params: {
-                userId: userId
-            }
-        })
-        .then(res => {
-            if (res.status !== 200) {
-                return;
-            }
-            let links = res.data.filter(link => link.userId == userId)
-            setLinks(links);
-        })
-        .catch(error => {
-            console.error("Error processing links request", error);
-        });
 
     const deleteLink = (id: number|undefined) => {
         axios.delete(`${Endpoints.PATH_LINKS}/${id}`)
@@ -58,11 +42,54 @@ export default function Account() {
         return navigate(routes.LOGIN);
     }
 
+    const init = (controller: AbortController) => {
+        axios.get<UserDTO>(
+            Endpoints.PATH_USERS + '/' + userId,
+            {
+                signal: controller.signal
+            })
+            .then(res => {
+                if (res.status !== 200) {
+                    return;
+                }
+                setUsername(res.data.username);
+            })
+            .catch(error => {
+                console.error("Error getting user", error);
+            })
+
+
+        axios.get<LinkDTO[]>(
+            Endpoints.PATH_LINKS,
+            {
+                params: {
+                    userId: userId
+                },
+                signal: controller.signal
+            })
+            .then(res => {
+                if (res.status !== 200) {
+                    return;
+                }
+                let links = res.data.filter(link => link.userId == userId)
+                setLinks(links);
+            })
+            .catch(error => {
+                console.error("Error processing links request", error);
+            });
+    }
+
     //init
+    //TODO Improve the Abort Controller logic
     useEffect(() => {
         if (!(userId && accessToken)) {
             return navigate(routes.LOGIN);
         }
+        const controller = new AbortController();
+
+        init(controller)
+
+        return () => controller.abort();
     }, []);
 
     return (
@@ -73,8 +100,8 @@ export default function Account() {
             justifyContent: "space-between",
             marginTop: 8
         }}>
-            <Typography variant="h3">
-                Username
+            <Typography variant="h2">
+                {username}
             </Typography>
             <Button color="secondary" onClick={logout}>
                 Logout
@@ -90,14 +117,16 @@ export default function Account() {
                     <Container maxWidth="xl" sx={{marginTop: 1}}>
                         <Grid container rowSpacing={1}>
                             <Grid item xs={3} display="flex" alignItems="center">
-                                <Link underline="hover" target="_blank" href={Endpoints.SHORTENER_URL + link.code}>
+                                <Link underline="hover" target="_blank" href={Endpoints.SHORTENER_URL + '/' + link.code}>
                                     {link.code}
                                 </Link>
                             </Grid>
                             <Grid item xs={3} display="flex" alignItems="center">
-                                <Link underline="hover" target="_blank" href={link.url}>
-                                    {link.url}
-                                </Link>
+                                <Typography noWrap>
+                                    <Link underline="hover" target="_blank" href={link.url}>
+                                        {link.url}
+                                    </Link>
+                                </Typography>
                             </Grid>
                             <Grid item xs={3} display="flex" alignItems="center" justifyContent="flex-end">
                                 <Typography>
