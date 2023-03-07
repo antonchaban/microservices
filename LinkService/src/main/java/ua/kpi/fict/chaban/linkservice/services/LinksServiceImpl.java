@@ -1,6 +1,7 @@
 package ua.kpi.fict.chaban.linkservice.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 import ua.kpi.fict.chaban.linkservice.entities.Link;
 import ua.kpi.fict.chaban.linkservice.repositories.LinksRepo;
@@ -15,10 +16,10 @@ public class LinksServiceImpl implements LinksService {
 
     @Override
     public Link createLink(Link link) throws NameAlreadyBoundException {
-        if (linksRepo.findLinkByCode(link.getCode()) != null){
+        if (linksRepo.findLinkByCode(link.getCode()) != null) {
             throw new NameAlreadyBoundException("This code is already taken");
         }
-        if (link.getExpiresStamp() == null){
+        if (link.getExpiresStamp() == null) {
             link.setExpiresStamp(null);
         }
         link.setCreatedStamp(Instant.now());
@@ -38,7 +39,7 @@ public class LinksServiceImpl implements LinksService {
 
     @Override
     public Link updateLink(Link link, String newShortLink) throws NameAlreadyBoundException {
-        if (linksRepo.findLinkByCode(newShortLink) != null){
+        if (linksRepo.findLinkByCode(newShortLink) != null) {
             throw new NameAlreadyBoundException("This code is already taken");
         }
         link.setCode(newShortLink);
@@ -48,11 +49,27 @@ public class LinksServiceImpl implements LinksService {
     @Override
     public Link updateLinkById(Long linkId, String newShortLink) throws NameAlreadyBoundException {
         Link link = linksRepo.findById(linkId).get();
-        if (linksRepo.findLinkByCode(newShortLink) != null){
+        if (linksRepo.findLinkByCode(newShortLink) != null) {
             throw new NameAlreadyBoundException("This code is already taken");
         }
         link.setCode(newShortLink);
         return linksRepo.save(link);
+    }
+
+    public String generateRandomString(int length) {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder sb = new StringBuilder();
+        do {
+            for (int i = 0; i < length; i++) {
+                int index = (int) (Math.random() * chars.length());
+                sb.append(chars.charAt(index));
+            }
+        } while (linksRepo.findLinkByCode(sb.toString()) != null);
+        return sb.toString();
+    }
+
+    public String getLinkByCode(String code) {
+        return linksRepo.findLinkByCode(code).getUrl();
     }
 }
 
