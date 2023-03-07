@@ -50,9 +50,21 @@ export default function Login() {
                 }
                 let login = res.data;
 
-                setCookie(Cookies.USER_ID, login.id, {maxAge: 604800});
-                setCookie(Cookies.ACCESS_TOKEN, login.accessToken, {maxAge: 604800});
-                setCookie(Cookies.REFRESH_TOKEN, login.refreshToken, {maxAge: 604800});
+                setCookie(Cookies.USER_ID, login.id,
+                    {
+                        maxAge: 604800,
+                        sameSite: "strict"
+                    });
+                setCookie(Cookies.ACCESS_TOKEN, login.accessToken,
+                    {
+                        maxAge: 604800,
+                        sameSite: "strict"
+                    });
+                setCookie(Cookies.REFRESH_TOKEN, login.refreshToken,
+                    {
+                        maxAge: 604800,
+                        sameSite: "strict"
+                    });
 
                 setLoggedIn(true);
             })
