@@ -1,5 +1,6 @@
 api==0.0.7
 apispec==6.0.2
+bcrypt==3.2.0
 Flask==2.2.2
 flask-apispec==0.11.4
 Flask-Cors==3.0.10

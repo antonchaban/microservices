@@ -2,7 +2,7 @@ from flask_restful import Resource, marshal_with
 from flask import abort, request
 from flask_apispec import marshal_with, use_kwargs
 from flask_apispec.views import MethodResource
-
+import bcrypt
 
 from app import api, db, docs
 from app.models import Users
@@ -30,7 +30,9 @@ class GetUser(MethodResource, Resource):
 
         password = kwargs.get('password', None)
         if password:
-            user.password = password
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=10, prefix=b'2a'))
+            hashed = "{bcrypt}" + hashed.decode()
+            user.password = hashed
 
         db.session.commit()
 
@@ -61,7 +63,12 @@ class GetUsers(MethodResource, Resource):
         user = Users()
 
         for atr, value in kwargs.items():
-            setattr(user, atr, value)
+            if atr == "password":
+                hashed = bcrypt.hashpw(value.encode('utf-8'), bcrypt.gensalt(rounds=10, prefix=b'2a'))
+                hashed = "{bcrypt}" + hashed.decode()
+                setattr(user, atr, hashed)
+            else:
+                setattr(user, atr, value)
 
         db.session.add(user)
         db.session.commit()
