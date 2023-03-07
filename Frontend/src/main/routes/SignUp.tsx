@@ -1,20 +1,75 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import {Link, Grid, Box, Avatar, Button, TextField, Typography, Container} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Routes from "../routes";
+import axios from "../api/client"
+import UserDTO from "../dto/UserDTO";
+import Endpoints from "../api/endpoints";
+import {useNavigate} from "react-router-dom";
+import {useCookies} from "react-cookie";
+import routes from "../routes";
+import Cookies from "../cookies";
 
 export default function SignUp() {
+
+    const [cookies, setCookie, removeCookie] = useCookies();
+    const navigate = useNavigate();
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
+        let data = new FormData(event.currentTarget);
+
+        let username = data.get("username");
+        let password = data.get("password");
+        let confirmPassword = data.get("confirm_password");
+
+        if (typeof username !== "string" ||
+            typeof password !== "string" ||
+            typeof confirmPassword !== "string") {
+            //Maybe handle as error in future
+            console.error("Form params are not strings");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            console.info("passwords do not match");
+            return;
+        }
+
+        if (!username.match("[a-zA-z]")) {
+            console.info("Username does not match");
+            return;
+        }
+
+        let user: UserDTO = {
+            username: username,
+            password: password
+        }
+
+        axios.post<UserDTO>(Endpoints.PATH_USERS, null, {
+            params: {
+                username: user.username,
+                password: user.password
+            }
+        })
+            .then(res => {
+                if (res.status !== 200) {
+                    return;
+                }
+                handleUserCreated();
+            })
+            .catch(error => {
+                console.error("Error creating user", error);
+            })
     };
+
+    const handleUserCreated = () => {
+        removeCookie(Cookies.USER_ID);
+        removeCookie(Cookies.ACCESS_TOKEN);
+        removeCookie(Cookies.REFRESH_TOKEN);
+
+        return navigate(routes.LOGIN);
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -52,6 +107,17 @@ export default function SignUp() {
                                 label="Password"
                                 type="password"
                                 id="password"
+                                autoComplete="new-password"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                fullWidth
+                                name="confirm_password"
+                                label="Confirm Password"
+                                type="password"
+                                id="confirm_password"
                                 autoComplete="new-password"
                             />
                         </Grid>

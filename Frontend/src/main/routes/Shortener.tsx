@@ -1,26 +1,60 @@
 import TextField from "@mui/material/TextField";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Avatar, Button, Container, Link, Typography} from "@mui/material";
 import {DirectionsRun} from "@mui/icons-material";
 import Routes from "../routes";
+import {useCookies} from "react-cookie";
+import Cookies from "../cookies";
+import {useNavigate} from "react-router-dom";
+import routes from "../routes";
+import axios from "../api/client";
+import Endpoints from "../api/endpoints";
+import LinkDTO from "../dto/LinkDTO";
 
 export default function Shortener() {
 
-    const [hasUrl, setHasUrl] = useState(false);
-    const [shortened, setShortened] = useState("");
+    const [urlCode, setUrlCode] = useState<string>();
+    const [cookies, setCookie, removeCookie] = useCookies();
+    const navigate = useNavigate();
+
+    const userId = cookies[Cookies.USER_ID] as number;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let form = new FormData(event.currentTarget);
-        setHasUrl(true);
-        setShortened("https://google.com");
+        let url = form.get("url");
+        if (typeof url !== "string" || url.length == 0) {
+            return;
+        }
+
+        let link: LinkDTO = {
+            url: url,
+            userId: userId
+        }
+
+        axios.post<LinkDTO>(Endpoints.PATH_LINKS, link)
+            .then(res => {
+                if (res.status !== 200) {
+                    return;
+                }
+                setUrlCode(res.data.code);
+            })
+            .catch(error => {
+                console.log("Error posting url", error);
+            })
     };
 
     const handleNewUrl = () => {
-        setHasUrl(false);
-        setShortened("");
+        setUrlCode(undefined);
     }
+
+    //init
+    useEffect(() => {
+        if (!cookies[Cookies.USER_ID] || !cookies[Cookies.ACCESS_TOKEN]) {
+            return navigate(routes.LOGIN);
+        }
+    }, []);
 
     return (
         <Container maxWidth="xl" sx={{}}>
@@ -45,7 +79,7 @@ export default function Shortener() {
                 >
                     Shorten the URL
                 </Typography>
-                {!hasUrl ?
+                {!urlCode ?
                     <Container maxWidth="xl">
                         <Container
                             component="form"
@@ -73,9 +107,9 @@ export default function Shortener() {
                     </Container>
                     :
                     <Container maxWidth="xl">
-                        <Link href={shortened} target="_blank">
+                        <Link href={Endpoints.SHORTENER_URL + '/' + urlCode} target="_blank">
                             <TextField
-                                value={shortened}
+                                value={Endpoints.SHORTENER_URL + '/' + urlCode}
                                 margin="normal"
                                 fullWidth
                                 disabled/>
