@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/link")
 public class LinksController {
     @Autowired
     private LinksServiceImpl linksService;
@@ -24,7 +24,7 @@ public class LinksController {
         var link = new Link();
         link.setUrl(jsonReq.getAsString("url"));
         link.setUserId(Long.parseLong(jsonReq.getAsString("userId")));
-        link.setExpiresStamp("true".equals(jsonReq.get("permanent")) ? null : Instant.now().plus(30, ChronoUnit.DAYS));
+        link.setExpiresStamp(jsonReq.get("permanent").equals(true) ? null : Instant.now().plus(30, ChronoUnit.DAYS));
         link.setCode(jsonReq.getAsString("code") != null ? jsonReq.getAsString("code") : linksService.generateRandomString(6));
         return ResponseEntity.ok(linksService.createLink(link));
     }

@@ -7,6 +7,6 @@ class GetHealth(MethodResource, Resource):
     def get(self):
         return None, 200
 
-api.add_resource(GetHealth, '/health')
+api.add_resource(GetHealth, '/api/user/health')
 
 docs.register(GetHealth)

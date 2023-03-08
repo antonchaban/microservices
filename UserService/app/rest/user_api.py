@@ -76,8 +76,8 @@ class GetUsers(MethodResource, Resource):
         return user
 
 
-api.add_resource(GetUsers, '/users')
-api.add_resource(GetUser, '/users/<int:id>')
+api.add_resource(GetUsers, '/api/user/users')
+api.add_resource(GetUser, '/api/user/users/<int:id>')
 
 docs.register(GetUsers)
 docs.register(GetUser)

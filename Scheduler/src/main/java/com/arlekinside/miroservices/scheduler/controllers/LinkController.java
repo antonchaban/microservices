@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("link")
+@RequestMapping("/api/scheduler")
 public class LinkController {
 
     private final LinkService linkService;
@@ -18,7 +18,7 @@ public class LinkController {
         this.linkService = linkService;
     }
 
-    @GetMapping("{id}/renew")
+    @GetMapping("link/{id}/renew")
     public Link renewLicense(@PathVariable("id") int id) throws NotFoundException {
         return linkService.renewLicense(id);
     }

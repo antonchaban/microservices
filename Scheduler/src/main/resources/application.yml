@@ -1,4 +1,4 @@
 spring:
   profiles:
-    active: @spring.profiles.active@ # loaded from maven
+    active: prod # loaded from maven
     default: dev

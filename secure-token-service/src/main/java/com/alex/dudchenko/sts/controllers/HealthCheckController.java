@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/health")
+@RequestMapping("/api/secure")
 public class HealthCheckController {
 
-    @GetMapping
+    @GetMapping("health")
     public ResponseEntity<String> getHealth() {
         return ResponseEntity.ok(null);
     }

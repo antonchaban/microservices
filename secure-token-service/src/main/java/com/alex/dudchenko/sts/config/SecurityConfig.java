@@ -1,6 +1,7 @@
 package com.alex.dudchenko.sts.config;
 
 import com.alex.dudchenko.sts.service.UserService;
+
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
