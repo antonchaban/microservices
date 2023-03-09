@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+  labels:
+    run: front
+spec:
+  selector:
+    matchLabels:
+      run: front
+  template:
+    metadata:
+      labels:
+        run: front
+    spec:
+      containers:
+      - image: arlekinside/shortener-front
+        imagePullPolicy: Always
+        name: front-service
+        ports:
+        - name: front-app
+          containerPort: 80
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /
+                port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 10

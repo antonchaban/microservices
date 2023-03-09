@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-service
+  labels:
+    run: link-service
+spec:
+  selector:
+    matchLabels:
+      run: link-service
+  template:
+    metadata:
+      labels:
+        run: link-service
+    spec:
+      containers:
+      - image: arlekinside/shortener-link-service
+        imagePullPolicy: IfNotPresent
+        name: link-service
+        ports:
+        - name: link-app
+          containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /health
+                port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    run: user-service
+spec:
+  selector:
+    matchLabels:
+      run: user-service
+  template:
+    metadata:
+      labels:
+        run: user-service
+    spec:
+      containers:
+      - image: arlekinside/shortener-user-service
+        imagePullPolicy: IfNotPresent
+        name: user-service
+        ports:
+        - name: user-app
+          containerPort: 5000
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /health
+                port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shortener-scheduler
+  labels:
+    run: shortener-scheduler
+spec:
+  selector:
+    matchLabels:
+      run: shortener-scheduler
+  template:
+    metadata:
+      labels:
+        run: shortener-scheduler
+    spec:
+      containers:
+      - image: arlekinside/shortener-scheduler
+        imagePullPolicy: IfNotPresent
+        name: shortener-scheduler
+        ports:
+        - name: scheduler-app
+          containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /health
+                port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sts
+  labels:
+    run: sts
+spec:
+  selector:
+    matchLabels:
+      run: sts
+  template:
+    metadata:
+      labels:
+        run: sts
+    spec:
+      containers:
+      - image: arlekinside/shortener-sts
+        imagePullPolicy: IfNotPresent
+        name: sts
+        ports:
+        - name: sts-app
+          containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /health
+                port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 3
+          

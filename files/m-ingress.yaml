@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lab-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /login
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: sts
+            port:
+              number: 80
+      - path: /api/links
+        pathType: Prefix
+        backend:
+          service:
+            name: link-service
+            port:
+              number: 80
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port:
+              number: 80
+      - path: /renew
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: shortener-scheduler
+            port:
+              number: 80

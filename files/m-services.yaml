@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sts
+  namespace: default
+spec:
+  ports:
+  - name: sts-app
+    port: 80
+    protocol: TCP
+    targetPort: sts-app
+  selector:
+    run: sts
+  type: NodePort
+  
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-service
+  namespace: default
+spec:
+  ports:
+  - name: link-app
+    port: 80
+    protocol: TCP
+    targetPort: link-app
+  selector:
+    run: link-service
+  type: NodePort
+  
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: default
+spec:
+  ports:
+  - name: user-app
+    port: 80
+    protocol: TCP
+    targetPort: user-app
+  selector:
+    run: user-service
+  type: NodePort
+  
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: shortener-scheduler
+  namespace: default
+spec:
+  ports:
+  - name: scheduler-app
+    port: 80
+    protocol: TCP
+    targetPort: scheduler-app
+  selector:
+    run: shortener-scheduler
+  type: NodePort
